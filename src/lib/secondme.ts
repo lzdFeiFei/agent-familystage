@@ -3,7 +3,7 @@ type JsonValue = Record<string, unknown>;
 function requiredEnv(name: string) {
   const value = process.env[name];
   if (!value) throw new Error(`Missing env: ${name}`);
-  return value;
+  return value.trim();
 }
 
 function normalizePath(baseUrl: string, path: string) {
