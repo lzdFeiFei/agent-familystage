@@ -1,12 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
+const normalizedDatabaseUrl = (process.env.DATABASE_URL || "").trim();
+if (normalizedDatabaseUrl) {
+  process.env.DATABASE_URL = normalizedDatabaseUrl;
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   sqliteReadyPromise: Promise<void> | undefined;
 };
 
 function isSqliteDatabase() {
-  const url = process.env.DATABASE_URL || "";
+  const url = (process.env.DATABASE_URL || "").trim();
   return url.startsWith("file:");
 }
 
