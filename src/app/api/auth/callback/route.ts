@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { exchangeCodeForToken, fetchUserInfo } from "@/lib/secondme";
 import { consumeOAuthState, setSessionCookie } from "@/lib/session";
@@ -34,16 +35,22 @@ export async function GET(request: NextRequest) {
 
   try {
     const token = await exchangeCodeForToken(code);
-    const userInfoResponse = await fetchUserInfo(token.accessToken);
-    const userInfoData = safeRecord(
-      safeRecord(userInfoResponse).data ?? userInfoResponse,
-    );
+    let userInfoData: Record<string, unknown> = {};
+    try {
+      const userInfoResponse = await fetchUserInfo(token.accessToken);
+      userInfoData = safeRecord(safeRecord(userInfoResponse).data ?? userInfoResponse);
+    } catch (error) {
+      console.warn("SecondMe user/info failed, continue login with token data:", error);
+    }
 
     const secondmeUserId =
       token.secondmeUserId ||
       safeString(userInfoData.user_id) ||
       safeString(userInfoData.userId) ||
-      safeString(userInfoData.id);
+      safeString(userInfoData.id) ||
+      safeString(userInfoData.route) ||
+      safeString(userInfoData.email) ||
+      `token_${crypto.createHash("sha256").update(token.accessToken).digest("hex").slice(0, 24)}`;
 
     if (!secondmeUserId) {
       return NextResponse.redirect(new URL("/?error=missing_user", request.url));
@@ -89,6 +96,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   } catch (error) {
     console.error("SecondMe callback failed:", error);
-    return NextResponse.redirect(new URL("/?error=oauth_failed", request.url));
+    const reason = encodeURIComponent(
+      error instanceof Error ? error.message.slice(0, 120) : "unknown_error",
+    );
+    return NextResponse.redirect(new URL(`/?error=oauth_failed&reason=${reason}`, request.url));
   }
 }

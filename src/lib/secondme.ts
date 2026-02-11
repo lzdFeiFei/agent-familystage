@@ -190,6 +190,9 @@ async function requestSecondMe(path: string, accessToken: string) {
   if (!response.ok) {
     throw new Error(`SecondMe API failed: ${response.status}`);
   }
+  if (typeof data.code === "number" && data.code !== 0) {
+    throw new Error(`SecondMe API error code: ${String(data.code)}`);
+  }
   return data;
 }
 
