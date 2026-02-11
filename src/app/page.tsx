@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { LoginButton } from "@/components/LoginButton";
 import { UserProfile } from "@/components/UserProfile";
+import Link from "next/link";
 
 export default async function Home() {
   const sessionUserId = await getSessionUserId();
@@ -68,7 +69,14 @@ export default async function Home() {
         <section className="mt-6 rounded-2xl border border-[#d6deeb] bg-white p-6">
           <h2 className="text-base font-semibold text-[#14213d]">已启用能力</h2>
           <div className="mt-3 flex flex-wrap gap-2">
-            {["OAuth 登录", "用户基础信息", "兴趣标签（Shades）", "退出登录"].map((item) => (
+            {[
+              "OAuth 登录",
+              "用户基础信息",
+              "兴趣标签（Shades）",
+              "公开 Agent 角色池",
+              "亲戚角色绑定",
+              "春节模拟对话",
+            ].map((item) => (
               <span
                 key={item}
                 className="rounded-full border border-[#cad7ef] bg-[#f0f5ff] px-3 py-1 text-xs text-[#365e9b]"
@@ -77,6 +85,28 @@ export default async function Home() {
               </span>
             ))}
           </div>
+          {isLoggedIn ? (
+            <div className="mt-4 flex flex-wrap gap-2 text-sm">
+              <Link
+                href="/agents"
+                className="rounded-lg border border-[#d6deeb] bg-white px-3 py-1 hover:bg-[#f2f6ff]"
+              >
+                亲友 Agent 池
+              </Link>
+              <Link
+                href="/roles"
+                className="rounded-lg border border-[#d6deeb] bg-white px-3 py-1 hover:bg-[#f2f6ff]"
+              >
+                角色绑定
+              </Link>
+              <Link
+                href="/chat"
+                className="rounded-lg border border-[#d6deeb] bg-white px-3 py-1 hover:bg-[#f2f6ff]"
+              >
+                进入春节对话
+              </Link>
+            </div>
+          ) : null}
         </section>
       </main>
     </div>

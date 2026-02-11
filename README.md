@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agent FamilyStage
 
-## Getting Started
+一个基于 SecondMe OAuth 的春节角色扮演网站：  
+朋友登录后会加入公开 Agent 池，运营者将 Agent 绑定到七大姑八大姨角色，登录用户即可发起春节模拟对话。
 
-First, run the development server:
+## 核心页面
+
+- `/` 首页（登录、资料展示）
+- `/agents` 公开 Agent 池
+- `/roles` 角色绑定管理
+- `/chat` 春节对话页
+
+## 本地运行
 
 ```bash
+npm install
+npx prisma generate
+npx prisma db push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+浏览器访问 `http://localhost:3000`。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 必要环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.local` 至少包含：
 
-## Learn More
+```env
+# OAuth
+SECONDME_CLIENT_ID=
+SECONDME_CLIENT_SECRET=
+SECONDME_REDIRECT_URI=http://localhost:3000/api/auth/callback
+SECONDME_SCOPES=user.info,user.info.shades,user.info.softmemory,chat,note.add,voice
+SECONDME_SESSION_SECRET=
 
-To learn more about Next.js, take a look at the following resources:
+# API
+SECONDME_API_BASE_URL=https://app.mindos.com/gate/lab
+SECONDME_OAUTH_URL=https://go.second.me/oauth/
+SECONDME_TOKEN_ENDPOINT=https://app.mindos.com/gate/lab/api/oauth/token/code
+SECONDME_CHAT_ENDPOINT=/api/secondme/chat/stream
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# DB
+DATABASE_URL=file:./dev.db
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 可选：管理员用户（逗号分隔）。为空时默认所有登录用户可管理绑定。
+ADMIN_USER_IDS=
+```
 
-## Deploy on Vercel
+## 说明
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 生产环境建议使用 PostgreSQL/MySQL，不建议继续使用 SQLite。
+- 撤销 Agent 后会立即下线角色绑定，历史对话仅保留脱敏内容。

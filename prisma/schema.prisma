@@ -19,6 +19,88 @@ model User {
   tokenExpiresAt DateTime @map("token_expires_at")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  agentProfile   AgentProfile?
+  roleBindings   RoleBinding[] @relation("RoleBindingCreator")
+  sessions       ChatSession[] @relation("SessionViewer")
 
   @@map("users")
+}
+
+enum ConsentStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum AgentVisibility {
+  PUBLIC
+}
+
+enum SessionStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum MessageSender {
+  USER
+  AGENT
+}
+
+model AgentProfile {
+  id            String          @id @default(cuid())
+  ownerUserId   String          @unique @map("owner_user_id")
+  consentStatus ConsentStatus   @default(ACTIVE) @map("consent_status")
+  visibility    AgentVisibility @default(PUBLIC)
+  displayAlias  String?         @map("display_alias")
+  revokedAt     DateTime?       @map("revoked_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  owner         User            @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  roleBindings  RoleBinding[]
+  sessions      ChatSession[]
+
+  @@map("agent_profiles")
+}
+
+model RoleBinding {
+  id              String       @id @default(cuid())
+  roleKey         String       @map("role_key")
+  agentProfileId  String       @map("agent_profile_id")
+  enabled         Boolean      @default(true)
+  weight          Int          @default(1)
+  createdByUserId String       @map("created_by_user_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  agentProfile    AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+  createdBy       User         @relation("RoleBindingCreator", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@unique([roleKey, agentProfileId])
+  @@map("role_bindings")
+}
+
+model ChatSession {
+  id             String        @id @default(cuid())
+  viewerUserId   String        @map("viewer_user_id")
+  roleKey        String        @map("role_key")
+  agentProfileId String        @map("agent_profile_id")
+  scenarioKey    String        @map("scenario_key")
+  status         SessionStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  viewer         User          @relation("SessionViewer", fields: [viewerUserId], references: [id], onDelete: Cascade)
+  agentProfile   AgentProfile  @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+  messages       ChatMessage[]
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String        @id @default(cuid())
+  sessionId String        @map("session_id")
+  sender    MessageSender
+  content   String
+  masked    Boolean       @default(false)
+  createdAt DateTime      @default(now()) @map("created_at")
+  session   ChatSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
 }

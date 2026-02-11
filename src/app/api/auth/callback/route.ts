@@ -71,6 +71,20 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    await prisma.agentProfile.upsert({
+      where: { ownerUserId: user.id },
+      create: {
+        ownerUserId: user.id,
+        consentStatus: "ACTIVE",
+        visibility: "PUBLIC",
+      },
+      update: {
+        consentStatus: "ACTIVE",
+        visibility: "PUBLIC",
+        revokedAt: null,
+      },
+    });
+
     await setSessionCookie(user.id);
     return NextResponse.redirect(new URL("/", request.url));
   } catch (error) {
