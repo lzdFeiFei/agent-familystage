@@ -29,6 +29,13 @@ export async function GET() {
       visibility: "PUBLIC",
     },
     include: {
+      owner: {
+        select: {
+          nickname: true,
+          avatarUrl: true,
+          secondmeUserId: true,
+        },
+      },
       roleBindings: {
         where: { enabled: true },
         select: {
@@ -45,6 +52,9 @@ export async function GET() {
     code: 0,
     data: list.map((item) => ({
       agentProfileId: item.id,
+      nickname: item.owner.nickname || "未命名亲友",
+      avatarUrl: item.owner.avatarUrl,
+      secondmeUserId: item.owner.secondmeUserId,
       consentStatus: item.consentStatus,
       visibility: item.visibility,
       roleCount: item.roleBindings.length,

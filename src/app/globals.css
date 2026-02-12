@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f9fc;
-  --foreground: #14213d;
+  --background: #fff9f2;
+  --foreground: #1f2937;
   --card: #ffffff;
-  --muted: #5c677d;
-  --line: #d6deeb;
-  --primary: #1f6feb;
-  --primary-hover: #1558bf;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --primary: #e53935;
+  --primary-hover: #d32f2f;
+  --danger: #dc2626;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+  --error-bg: #fef2f2;
+  --error-line: #fca5a5;
+  --error-text: #b91c1c;
 }
 
 @theme inline {
@@ -22,13 +30,6 @@ body {
   font-family: var(--font-noto-sans-sc), sans-serif;
 }
 
-.surface {
-  background: linear-gradient(140deg, #ffffff, #f4f8ff);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(31, 111, 235, 0.08);
-}
-
 .btn-primary {
   background: var(--primary);
   color: #ffffff;
@@ -37,4 +38,53 @@ body {
 
 .btn-primary:hover {
   background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--foreground);
+  border: 1px solid var(--line);
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+  transition: opacity 0.2s ease;
+}
+
+.btn-danger:hover {
+  opacity: 0.92;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.subpanel {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.status-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.alert-error {
+  background: var(--error-bg);
+  border: 1px solid var(--error-line);
+  color: var(--error-text);
+}
+
+.alert-warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }

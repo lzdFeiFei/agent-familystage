@@ -212,7 +212,16 @@ export async function sendRoleplayChat(
     message: string;
   },
 ) {
-  const prompt = `你现在扮演春节家庭场景里的${params.roleLabel}。风格：轻度魔幻但不辱骂、不过界。当前话题：${params.scenarioLabel}。用户消息：${params.message}`;
+  const prompt = [
+    `你现在扮演春节家庭场景里的${params.roleLabel}。`,
+    `当前话题：${params.scenarioLabel}。`,
+    "必须遵守：",
+    `1) 只能以“${params.roleLabel}”身份说话，不得代替其他角色发言。`,
+    "2) 不要输出舞台动作、旁白、星号动作（如 *...*）。",
+    "3) 只输出一段自然口语，不加引号，不加前缀标签。",
+    "4) 控制在80字以内，不辱骂、不过界。",
+    `对话上下文：${params.message}`,
+  ].join("\n");
   const payload = { message: prompt };
   const endpoints = getChatEndpoints();
 

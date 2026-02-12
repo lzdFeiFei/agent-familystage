@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 
 type AgentItem = {
   agentProfileId: string;
+  nickname: string;
+  avatarUrl?: string | null;
+  secondmeUserId: string;
   consentStatus: string;
   visibility: string;
   roleCount: number;
@@ -41,42 +44,61 @@ export function AgentPool() {
     load();
   }, []);
 
-  if (loading) return <p className="text-sm text-[#5c677d]">正在加载角色池...</p>;
-  if (error) return <p className="text-sm text-[#b84b4b]">{error}</p>;
+  if (loading) return <p className="text-sm text-[var(--muted)]">正在加载角色池...</p>;
+  if (error) return <p className="text-sm text-[var(--error-text)]">{error}</p>;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[#5c677d]">当前可用 Agent：{items.length}</p>
+        <p className="text-sm text-[var(--muted)]">当前可用 Agent：{items.length}</p>
         <button
           type="button"
           onClick={load}
-          className="rounded-lg border border-[#d6deeb] bg-white px-3 py-1 text-xs text-[#14213d] hover:bg-[#f2f6ff]"
+          className="btn-secondary rounded-lg px-3 py-1 text-xs"
         >
           刷新
         </button>
       </div>
-      <div className="space-y-2">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {items.length === 0 ? (
-          <p className="text-sm text-[#5c677d]">暂无公开 Agent，请先让朋友登录授权。</p>
+          <p className="text-sm text-[var(--muted)]">暂无公开 Agent，请先让朋友登录授权。</p>
         ) : null}
         {items.map((item, index) => (
-          <div key={item.agentProfileId} className="rounded-xl border border-[#d6deeb] bg-white p-4">
-            <p className="text-sm font-medium text-[#14213d]">
+          <div key={item.agentProfileId} className="panel p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[var(--line)] bg-[#f8fafc] text-sm text-[var(--muted)]">
+                {item.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.avatarUrl} alt={item.nickname} className="h-full w-full object-cover" />
+                ) : (
+                  item.nickname.slice(0, 1)
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--foreground)]">{item.nickname}</p>
+                <p className="text-xs text-[var(--muted)]">@{item.secondmeUserId}</p>
+              </div>
+            </div>
+            <p className="text-xs text-[var(--muted)]">
               Agent #{index + 1} · 已绑定角色 {item.roleCount} 个
             </p>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {item.roles.map((role) => (
                 <span
                   key={role.id}
-                  className="rounded-full border border-[#c6d6f3] bg-[#f0f5ff] px-2 py-0.5 text-xs text-[#365e9b]"
+                  className="rounded-full border border-[var(--line)] bg-[#f8fafc] px-2 py-1 text-xs text-[#334155]"
                 >
                   {role.roleLabel} (权重 {role.weight})
                 </span>
               ))}
               {item.roles.length === 0 ? (
-                <span className="text-xs text-[#5c677d]">未绑定任何角色</span>
+                <span className="text-xs text-[var(--muted)]">未绑定任何角色</span>
               ) : null}
+            </div>
+            <div className="mt-3">
+              <span className="status-success rounded-full px-2 py-1 text-[11px] font-semibold">
+                {item.consentStatus}
+              </span>
             </div>
           </div>
         ))}

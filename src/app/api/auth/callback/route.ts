@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   const storedState = await consumeOAuthState();
 
   if (!code) {
-    return NextResponse.redirect(new URL("/?error=missing_code", request.url));
+    return NextResponse.redirect(new URL("/login?error=missing_code", request.url));
   }
 
   if (!storedState || callbackState !== storedState) {
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       `token_${crypto.createHash("sha256").update(token.accessToken).digest("hex").slice(0, 24)}`;
 
     if (!secondmeUserId) {
-      return NextResponse.redirect(new URL("/?error=missing_user", request.url));
+      return NextResponse.redirect(new URL("/login?error=missing_user", request.url));
     }
 
     const expiresAt = new Date(Date.now() + token.expiresIn * 1000);
@@ -99,6 +99,6 @@ export async function GET(request: NextRequest) {
     const reason = encodeURIComponent(
       error instanceof Error ? error.message.slice(0, 120) : "unknown_error",
     );
-    return NextResponse.redirect(new URL(`/?error=oauth_failed&reason=${reason}`, request.url));
+    return NextResponse.redirect(new URL(`/login?error=oauth_failed&reason=${reason}`, request.url));
   }
 }

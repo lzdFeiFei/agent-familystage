@@ -8,5 +8,5 @@ export async function POST() {
 
 export async function GET(request: NextRequest) {
   await clearSessionCookie();
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.redirect(new URL("/login", request.url));
 }

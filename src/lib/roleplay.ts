@@ -68,7 +68,7 @@ export async function generateAgentReply(params: {
   scenarioKey: string;
   message: string;
 }) {
-  const roleLabel = getRoleLabel(params.roleKey);
+  const roleLabel = params.roleKey === "self" ? "我" : getRoleLabel(params.roleKey);
   const scenarioLabel =
     SCENARIO_OPTIONS.find((item) => item.key === params.scenarioKey)?.label || "春节寒暄";
 
